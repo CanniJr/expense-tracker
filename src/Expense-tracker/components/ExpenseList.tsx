@@ -11,7 +11,7 @@ interface ExpenseListProps {
 }
 
 const ExpenseList = ({ expenses, onDelete }: ExpenseListProps) => {
-	if (expenses.length === 0) return <p>No Expenses Recorded</p>;
+	if (expenses.length === 0) return null;
 	return (
 		<table className="table table-bordered">
 			<thead>
