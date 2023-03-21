@@ -30,7 +30,12 @@ function App() {
 	return (
 		<div>
 			<div className="mb-5">
-				<ExpenseForm />
+				<ExpenseForm
+					onSubmit={
+						(data) =>
+							setExpenses([{ ...data, id: expenses.length + 1 }, ...expenses]) // More complex database might required randomized ID generation instead
+					}
+				/>
 			</div>
 			<div className="mb-3">
 				<ExpenseFilter

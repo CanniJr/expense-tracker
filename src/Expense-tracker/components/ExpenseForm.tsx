@@ -12,19 +12,31 @@ const schema = z.object({
 		.number({ invalid_type_error: "Amount required" })
 		.min(1)
 		.max(100_000),
-	category: z.enum(categories),
+	category: z.enum(categories, {
+		errorMap: () => ({ message: "Pick a category" }),
+	}),
 });
 
 type ExpenseFormData = z.infer<typeof schema>;
 
-const ExpenseForm = () => {
+interface ExpenseFormProps {
+	onSubmit: (data: ExpenseFormData) => void;
+}
+
+const ExpenseForm = ({ onSubmit }: ExpenseFormProps) => {
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
+		reset,
 	} = useForm<ExpenseFormData>({ resolver: zodResolver(schema) });
 	return (
-		<form onSubmit={handleSubmit((data) => console.log(data))}>
+		<form
+			onSubmit={handleSubmit((data) => {
+				onSubmit(data);
+				reset();
+			})}
+		>
 			<div className="mb-3">
 				<label htmlFor="description" className="form-label">
 					Description
@@ -58,6 +70,7 @@ const ExpenseForm = () => {
 					Category
 				</label>
 				<select {...register("category")} className="form-select">
+					<option></option>
 					{categories.map((category) => (
 						<option key={category} value={category}>
 							{category}
