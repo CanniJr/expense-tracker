@@ -1,17 +1,27 @@
-import { FormEvent, useRef, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface formDataProps {
-	name: string;
-	age: number;
-}
+// interface formDataProps {
+// 	name: string;
+// 	age: number;
+// }
+
+const formSchema = z.object({
+	name: z
+		.string()
+		.min(3, { message: "Name must contain at least 3 characters" }),
+	age: z.number({ invalid_type_error: "Age field is required" }).min(13),
+});
+
+type formDataProps = z.infer<typeof formSchema>;
 
 const Form = () => {
 	const {
 		register,
 		handleSubmit,
-		formState: { errors },
-	} = useForm<formDataProps>();
+		formState: { errors, isValid },
+	} = useForm<formDataProps>({ resolver: zodResolver(formSchema) });
 	const onSubmit = (data: FieldValues) => {
 		console.log(data);
 	};
@@ -28,16 +38,9 @@ const Form = () => {
 						id="name"
 						type="text"
 						className="form-control"
-						{...register("name", { required: true, minLength: 3 })}
+						{...register("name")}
 					/>
-					{errors.name?.type === "required" && (
-						<p className="text-danger">The Name field is required.</p>
-					)}
-					{errors.name?.type === "minLength" && (
-						<p className="text-danger">
-							The name must be at least 3 characters.
-						</p>
-					)}
+					{errors.name && <p className="text-danger">{errors.name.message}</p>}
 				</div>{" "}
 				<div className="mb-3">
 					<label htmlFor="age" className="form-label">
@@ -47,13 +50,11 @@ const Form = () => {
 						id="age"
 						type="number"
 						className="form-control"
-						{...register("age", { required: true })}
+						{...register("age", { valueAsNumber: true })}
 					/>
-					{errors.age?.type === "required" && (
-						<p className="text-danger">The Age field is required.</p>
-					)}
+					{errors.age && <p className="text-danger">{errors.age.message}</p>}
 				</div>
-				<button className="btn btn-primary" type="submit">
+				<button disabled={!isValid} className="btn btn-primary" type="submit">
 					Submit
 				</button>
 			</form>

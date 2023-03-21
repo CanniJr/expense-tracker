@@ -1,9 +1,10 @@
-import Form from "./components/Form";
+import ExpenseList from "./Expense-tracker/components/ExpenseList";
 
 function App() {
+	const category = ["Groceries", "Entertainment", "Utility"];
 	return (
 		<div>
-			<Form />
+			<ExpenseList />
 		</div>
 	);
 }
